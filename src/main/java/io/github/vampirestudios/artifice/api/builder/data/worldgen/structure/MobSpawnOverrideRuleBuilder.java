@@ -1,12 +1,12 @@
 package io.github.vampirestudios.artifice.api.builder.data.worldgen.structure;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.vampirestudios.artifice.api.builder.TypedJsonObject;
+import io.github.vampirestudios.artifice.api.builder.TypedJsonBuilder;
+import io.github.vampirestudios.artifice.api.resource.JsonResource;
 
-public class MobSpawnOverrideRuleBuilder extends TypedJsonObject {
+public class MobSpawnOverrideRuleBuilder extends TypedJsonBuilder<JsonResource<JsonObject>> {
 	protected MobSpawnOverrideRuleBuilder() {
-		super(new JsonObject());
+		super(new JsonObject(), JsonResource::new);
 	}
 
 	public MobSpawnOverrideRuleBuilder pieceBoundingBox() {
@@ -20,16 +20,16 @@ public class MobSpawnOverrideRuleBuilder extends TypedJsonObject {
 	}
 
 	public MobSpawnOverrideRuleBuilder spawns(SpawnsBuilder... spawnsBuilders) {
-		MobSpawnOverrideRuleBuilder result = new MobSpawnOverrideRuleBuilder();
-		JsonArray aaa = new JsonArray();
-		for (SpawnsBuilder spawnsBuilder : spawnsBuilders) {
-			aaa.add(new TypedJsonObject().add("type", spawnsBuilder.type())
+		jsonArray("spawns", jsonArrayBuilder -> {
+			for (SpawnsBuilder spawnsBuilder : spawnsBuilders) {
+				jsonArrayBuilder.addObject(jsonObjectBuilder -> jsonObjectBuilder
+					.add("type", spawnsBuilder.type())
 					.add("weight", spawnsBuilder.weight())
 					.add("minCount", spawnsBuilder.minCount())
-					.add("maxCount", spawnsBuilder.maxCount()).build());
-		}
-		result.join("spawns", aaa);
-		return result;
+					.add("maxCount", spawnsBuilder.maxCount()));
+			}
+		});
+		return this;
 	}
 
 }
