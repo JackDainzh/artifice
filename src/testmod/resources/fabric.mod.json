@@ -22,11 +22,11 @@
 
   "entrypoints": {
     "main": [ "com.swordglowsblue.artifice.test.ArtificeTestMod" ],
-    "client": [ "com.swordglowsblue.artifice.test.ArtificeTestClientMod" ]
+    "artifice:asset_pack": ["com.swordglowsblue.artifice.test.ArtificeTestClientMod"]
   },
 
   "depends": {
-    "minecraft": ">=1.18",
+    "minecraft": ">=1.19",
     "fabricloader": ">=0.13.3",
     "artifice": "*",
     "java": "17"

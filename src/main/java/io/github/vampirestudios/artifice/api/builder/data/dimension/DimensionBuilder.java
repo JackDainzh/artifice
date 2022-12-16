@@ -1,65 +1,74 @@
 package io.github.vampirestudios.artifice.api.builder.data.dimension;
 
 import com.google.gson.JsonObject;
-import io.github.vampirestudios.artifice.api.builder.TypedJsonBuilder;
-import io.github.vampirestudios.artifice.api.resource.JsonResource;
-import io.github.vampirestudios.artifice.api.util.Processor;
+import io.github.vampirestudios.artifice.api.builder.TypedJsonObject;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.dimension.DimensionType;
 
-public class DimensionBuilder extends TypedJsonBuilder<JsonResource<JsonObject>> {
-    public DimensionBuilder() {
-        super(new JsonObject(), JsonResource::new);
-    }
+public class DimensionBuilder extends TypedJsonObject {
+	public DimensionBuilder() {
+		super(new JsonObject());
+	}
 
-    /**
-     * Set the dimension type.
-     * @param identifier
-     * @return
-     */
-    public DimensionBuilder dimensionType(ResourceLocation identifier) {
-        this.root.addProperty("type", identifier.toString());
-        return this;
-    }
+	/**
+	 * Set the dimension type.
+	 */
+	public DimensionBuilder dimensionType(ResourceLocation identifier) {
+		this.root.addProperty("type", identifier.toString());
+		return this;
+	}
 
-    /**
-     * Make a Chunk Generator.
-     * @param generatorBuilder
-     * @param generatorBuilderInstance
-     * @param <T> A class extending ChunkGeneratorTypeBuilder.
-     * @return
-     */
-    public <T extends ChunkGeneratorTypeBuilder> DimensionBuilder generator(Processor<T> generatorBuilder, T generatorBuilderInstance) {
-        with("generator", JsonObject::new, generator -> generatorBuilder.process(generatorBuilderInstance).buildTo(generator));
-        return this;
-    }
+	/**
+	 * Set the dimension type.
+	 */
+	public DimensionBuilder dimensionType(ResourceKey<DimensionType> identifier) {
+		this.root.addProperty("type", identifier.location().toString());
+		return this;
+	}
 
-    /**
-     * Make a noise based Chunk Generator.
-     * @param generatorBuilder
-     * @return
-     */
-    public DimensionBuilder noiseGenerator(Processor<ChunkGeneratorTypeBuilder.NoiseChunkGeneratorTypeBuilder> generatorBuilder) {
-        return this.generator(generatorBuilder, new ChunkGeneratorTypeBuilder.NoiseChunkGeneratorTypeBuilder());
-    }
+	/**
+	 * Make a Chunk Generator.
+	 *
+	 * @param generatorBuilder
+	 * @param <T>              A class extending ChunkGeneratorTypeBuilder.
+	 * @return
+	 */
+	public <T extends ChunkGeneratorTypeBuilder> DimensionBuilder generator(T generatorBuilder) {
+		join("generator", generatorBuilder.build());
+		return this;
+	}
 
-    /**
-     * Make a flat Chunk Generator.
-     * @param generatorBuilder
-     * @return
-     */
-    public DimensionBuilder flatGenerator(Processor<ChunkGeneratorTypeBuilder.FlatChunkGeneratorTypeBuilder> generatorBuilder) {
-        return this.generator(generatorBuilder, new ChunkGeneratorTypeBuilder.FlatChunkGeneratorTypeBuilder());
-    }
+	/**
+	 * Make a noise based Chunk Generator.
+	 *
+	 * @param generatorBuilder
+	 * @return
+	 */
+	public DimensionBuilder noiseGenerator(ChunkGeneratorTypeBuilder.NoiseChunkGeneratorTypeBuilder generatorBuilder) {
+		return this.generator(generatorBuilder);
+	}
 
-    /**
-     * Use with a Chunk Generator which doesn't need any configuration. Example: Debug Mode Generator.
-     * @param generatorId The ID of the chunk generator type.
-     * @return this
-     */
-    public DimensionBuilder simpleGenerator(String generatorId) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("type", generatorId);
-        this.root.add("generator", jsonObject);
-        return this;
-    }
+	/**
+	 * Make a flat Chunk Generator.
+	 *
+	 * @param generatorBuilder
+	 * @return
+	 */
+	public DimensionBuilder flatGenerator(ChunkGeneratorTypeBuilder.FlatChunkGeneratorTypeBuilder generatorBuilder) {
+		return this.generator(generatorBuilder);
+	}
+
+	/**
+	 * Use with a Chunk Generator which doesn't need any configuration. Example: Debug Mode Generator.
+	 *
+	 * @param generatorId The ID of the chunk generator type.
+	 * @return this
+	 */
+	public DimensionBuilder simpleGenerator(String generatorId) {
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("type", generatorId);
+		this.root.add("generator", jsonObject);
+		return this;
+	}
 }

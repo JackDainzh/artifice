@@ -2,14 +2,13 @@ package io.github.vampirestudios.artifice.api.builder.data.worldgen.structure;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.vampirestudios.artifice.api.builder.TypedJsonBuilder;
+import io.github.vampirestudios.artifice.api.builder.TypedJsonObject;
 import io.github.vampirestudios.artifice.api.builder.data.worldgen.configured.feature.config.FeatureConfigBuilder;
-import io.github.vampirestudios.artifice.api.resource.JsonResource;
-import io.github.vampirestudios.artifice.api.util.Processor;
+import io.github.vampirestudios.artifice.api.builder.data.worldgen.configured.structure.SpawnOverridesBuilder;
 
-public class StructureBuilder extends TypedJsonBuilder<JsonResource<JsonObject>> {
+public class StructureBuilder extends TypedJsonObject {
 	public StructureBuilder() {
-		super(new JsonObject(), JsonResource::new);
+		super(new JsonObject());
 	}
 
 	public StructureBuilder type(String type) {
@@ -37,20 +36,20 @@ public class StructureBuilder extends TypedJsonBuilder<JsonResource<JsonObject>>
 	}
 
 	/*
-	* Weather or not it should add extra terrain below the structure.
-	* */
+	 * Weather or not it should add extra terrain below the structure.
+	 * */
 	public StructureBuilder adoptNoise(boolean adoptNoise) {
 		this.root.addProperty("adoptNoise", adoptNoise);
 		return this;
 	}
 
-	public StructureBuilder spawnOverrides(Processor<SpawnOverridesBuilder> processor) {
-		with("spawn_overrides", JsonObject::new, jsonObject -> processor.process(new SpawnOverridesBuilder()).buildTo(jsonObject));
+	public StructureBuilder spawnOverrides(SpawnOverridesBuilder processor) {
+		this.join("spawn_overrides", processor.build());
 		return this;
 	}
 
-	public StructureBuilder featureConfig(Processor<FeatureConfigBuilder> processor) {
-		with("config", JsonObject::new, jsonObject -> processor.process(new FeatureConfigBuilder()).buildTo(jsonObject));
+	public StructureBuilder featureConfig(FeatureConfigBuilder processor) {
+		this.join("config", processor.build());
 		return this;
 	}
 }
